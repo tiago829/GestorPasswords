@@ -20,7 +20,7 @@ class App(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
 
         # Rodapé
-        ctk.CTkLabel(self, text="Created by N0B0DY", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        ctk.CTkLabel(self, text="Created by Tiaguin", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="w")
         ctk.CTkLabel(self, text="v0.1", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="e")
 
         self.fernet = None
@@ -28,6 +28,42 @@ class App(ctk.CTk):
         self.view_atual = None
 
         self.mostrar_login()
+
+        # Verifica atualizações após a app abrir
+        self.after(1000, self.verificar_atualizacao)
+
+    def verificar_atualizacao(self):
+        from utils.updater import verificar_atualizacao, URL_DOWNLOAD
+        import webbrowser
+
+        versao_nova = verificar_atualizacao()
+        if not versao_nova:
+            return
+
+        popup = ctk.CTkToplevel(self)
+        popup.title("Atualização disponível")
+        popup.geometry("300x180")
+        popup.resizable(False, False)
+        popup.grab_set()
+        popup.grid_columnconfigure(0, weight=1)
+        popup.grid_columnconfigure(1, weight=1)
+
+        ctk.CTkLabel(popup, text=f"🆕 Nova versão disponível: {versao_nova}", font=("Arial", 13, "bold"), wraplength=260).grid(row=0, column=0, columnspan=2, pady=20, padx=20)
+        ctk.CTkLabel(popup, text="Queres atualizar agora?", wraplength=260).grid(row=1, column=0, columnspan=2, padx=20)
+
+        ctk.CTkButton(
+            popup,
+            text="Atualizar",
+            command=lambda: [webbrowser.open(URL_DOWNLOAD), popup.destroy()]
+        ).grid(row=2, column=0, padx=10, pady=15, sticky="ew")
+
+        ctk.CTkButton(
+            popup,
+            text="Agora não",
+            fg_color="transparent",
+            border_width=2,
+            command=popup.destroy
+        ).grid(row=2, column=1, padx=10, pady=15, sticky="ew")
 
     def mostrar_view(self, view):
         if self.view_atual:
