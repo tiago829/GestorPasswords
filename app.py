@@ -14,10 +14,11 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Gestor de Passwords")
-        self.geometry("400x500")
+        self.geometry("500x600")
         self.resizable(True, True)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
+        self.minsize(600, 400)
 
         # Rodapé
         ctk.CTkLabel(self, text="Created by Tiaguin", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="w")

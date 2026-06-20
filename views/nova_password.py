@@ -52,9 +52,16 @@ class NovaPasswordView(ctk.CTkFrame):
         self.label_password_gerada = ctk.CTkLabel(self, text="", font=("Arial", 11), wraplength=320)
         self.label_password_gerada.grid(row=8, column=0, columnspan=3, pady=10)
 
-        ctk.CTkButton(self, text="Gerar Password", command=self.gerar).grid(row=9, column=0, columnspan=3, padx=20, pady=5, sticky="ew")
-        ctk.CTkButton(self, text="Guardar", command=self.guardar).grid(row=10, column=0, columnspan=3, padx=20, pady=5, sticky="ew")
-        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, command=self.ao_voltar).grid(row=11, column=0, columnspan=3, padx=20, pady=5, sticky="ew")
+        self.label_forca = ctk.CTkProgressBar(self)
+        self.label_forca.grid(row=9, column=0, padx=20, pady=(0,5), sticky="ew")
+        self.label_forca.set(0)
+
+        self.texto_forca = ctk.CTkLabel(self, text="", font=("Arial", 11))
+        self.texto_forca.grid(row=10, column=0, pady=(0,10))
+
+        ctk.CTkButton(self, text="Gerar Password", command=self.gerar).grid(row=11, column=0, padx=20, pady=5, sticky="ew")
+        ctk.CTkButton(self, text="Guardar", command=self.guardar).grid(row=12, column=0, padx=20, pady=5, sticky="ew")
+        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, command=self.ao_voltar).grid(row=13, column=0, padx=20, pady=5, sticky="ew")
 
     def gerar(self):
         caracteres = ""
@@ -72,12 +79,40 @@ class NovaPasswordView(ctk.CTkFrame):
         tamanho = self.tamanho.get()
         self.password_gerada = "".join(random.choice(caracteres) for _ in range(tamanho))
         self.label_password_gerada.configure(text=self.password_gerada, text_color="green")
+        forca_texto, forca_cor = self.calcular_forca(self.password_gerada)
+        pontos_map = {"Fraca": 0.33, "Média": 0.66, "Forte": 1.0}
+        self.label_forca.set(pontos_map[forca_texto])
+        self.label_forca.configure(progress_color=forca_cor)
+        self.texto_forca.configure(text=f"Força: {forca_texto}", text_color=forca_cor)
 
     def limitar_descricao(self, event):
         texto = self.entrada_descricao.get()
         if len(texto) > 32:
             self.entrada_descricao.delete(32, "end")
             
+    def calcular_forca(self, password):
+        pontos = 0
+
+        if len(password) >= 8:
+            pontos += 1
+        if len(password) >= 16:
+            pontos += 1
+        if any(c.islower() for c in password):
+            pontos += 1
+        if any(c.isupper() for c in password):
+            pontos += 1
+        if any(c.isdigit() for c in password):
+            pontos += 1
+        if any(not c.isalnum() for c in password):
+            pontos += 1
+
+        if pontos <= 2:
+            return "Fraca", "red"
+        elif pontos <= 4:
+            return "Média", "orange"
+        else:
+            return "Forte", "green"
+
     def guardar(self):
         if not self.password_gerada:
             self.label_password_gerada.configure(text="Gera uma password primeiro!", text_color="red")
