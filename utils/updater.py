@@ -23,9 +23,11 @@ def verificar_atualizacao():
         versao_atual = get_versao_atual()
         resposta = requests.get(URL_VERSAO, timeout=5)
         versao_nova = resposta.text.strip()
+        print(f"DEBUG: local='{versao_atual}' github='{versao_nova}'")
 
         if versao_nova != versao_atual:
             return versao_nova
         return None
     except:
+        print(f"DEBUG erro: {e}")
         return None
