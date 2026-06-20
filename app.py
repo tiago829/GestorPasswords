@@ -21,8 +21,9 @@ class App(ctk.CTk):
 
         # Rodapé
         ctk.CTkLabel(self, text="Created by Tiaguin", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        ctk.CTkLabel(self, text="v0.1", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="e")
-
+        from utils.updater import get_versao_atual
+        ctk.CTkLabel(self, text=f"v{get_versao_atual()}", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="e")
+        
         self.fernet = None
         self.nome_bd = None
         self.view_atual = None
