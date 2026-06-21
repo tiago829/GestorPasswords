@@ -4,10 +4,10 @@ Um gestor Básico offline
 
 Next Features:
 
-- Thinking....
+-  Pesquisa/filtro na lista de passwords
+-  Melhoria de Segurança 
 
-
-Version 0.2.1
+Version 0.2.2
 New Features:
 
-- hide/show button on de generated password.
+- Melhorias na UI
