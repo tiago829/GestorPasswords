@@ -21,7 +21,7 @@ class PasswordsView(ctk.CTkFrame):
         self.scroll.grid_columnconfigure(1, weight=1)  # password - estica e corta
         self.scroll.grid_columnconfigure(2, weight=0)  # botões - fixo à direita
 
-        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, command=self.ao_voltar).grid(row=2, column=0, padx=20, pady=10, sticky="ew")
+        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, text_color=("black", "white"), command=self.ao_voltar).grid(row=2, column=0, padx=20, pady=10, sticky="ew")
 
         self.carregar_lista()
 

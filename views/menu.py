@@ -1,4 +1,5 @@
 import customtkinter as ctk
+from utils.icons import carregar_icone
 
 
 class MenuView(ctk.CTkFrame):
@@ -9,10 +10,16 @@ class MenuView(ctk.CTkFrame):
         ctk.CTkLabel(self, text="🔐 Gestor de Passwords", font=("Arial", 22, "bold")).grid(row=0, column=0, pady=20)
 
         botoes = [
-            ("➕ Nova Password", callbacks["nova_password"]),
-            ("📋 Passwords", callbacks["passwords"]),
-            ("🚪 Sair", callbacks["sair"]),
+            ("Nova Password", "plus.png", callbacks["nova_password"]),
+            ("Passwords", "list.png", callbacks["passwords"]),
+            ("Sair", "logout.png", callbacks["sair"]),
         ]
 
-        for i, (texto, comando) in enumerate(botoes, start=1):
-            ctk.CTkButton(self, text=texto, command=comando).grid(row=i, column=0, padx=20, pady=5, sticky="ew")
+        for i, (texto, icone, comando) in enumerate(botoes, start=1):
+            ctk.CTkButton(
+                self,
+                text=texto,
+                image=carregar_icone(icone),
+                anchor="w",
+                command=comando
+            ).grid(row=i, column=0, padx=20, pady=5, sticky="ew")

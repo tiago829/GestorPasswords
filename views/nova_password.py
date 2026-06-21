@@ -2,6 +2,7 @@ import customtkinter as ctk
 import random
 import string
 from database.db import adicionar_password, get_passwords
+from utils.icons import carregar_icone
 
 
 class NovaPasswordView(ctk.CTkFrame):
@@ -58,12 +59,18 @@ class NovaPasswordView(ctk.CTkFrame):
         self.entrada_password_gerada.bind("<KeyRelease>", self.atualizar_forca_em_tempo_real)
 
         self.mostrar_password = False
-        ctk.CTkButton(
-        frame_password,
-        text="👁",
-        width=30,
-        command=self.toggle_mostrar_password
-        ).grid(row=0, column=1, padx=(5, 0))
+        self.icone_eye = carregar_icone("eye.png", tamanho=20)
+        self.icone_eye_off = carregar_icone("eye-off.png", tamanho=20)
+
+        self.botao_olho = ctk.CTkButton(
+            frame_password,
+            text="",
+            image=self.icone_eye,
+            width=36,
+            height=36,
+            command=self.toggle_mostrar_password
+        )
+        self.botao_olho.grid(row=0, column=1, padx=(5, 0))
 
         self.label_forca = ctk.CTkProgressBar(self)
         self.label_forca.grid(row=9, column=0, padx=20, pady=(0,5), sticky="ew")
@@ -74,7 +81,7 @@ class NovaPasswordView(ctk.CTkFrame):
 
         ctk.CTkButton(self, text="Gerar Password", command=self.gerar).grid(row=11, column=0, padx=20, pady=5, sticky="ew")
         ctk.CTkButton(self, text="Guardar", command=self.guardar).grid(row=12, column=0, padx=20, pady=5, sticky="ew")
-        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, command=self.ao_voltar).grid(row=13, column=0, padx=20, pady=5, sticky="ew")
+        ctk.CTkButton(self, text="⬅ Voltar", fg_color="transparent", border_width=2, text_color=("black", "white"), command=self.ao_voltar).grid(row=13, column=0, padx=20, pady=5, sticky="ew")
 
     def gerar(self):
         caracteres = ""
@@ -105,8 +112,10 @@ class NovaPasswordView(ctk.CTkFrame):
         self.mostrar_password = not self.mostrar_password
         if self.mostrar_password:
             self.entrada_password_gerada.configure(show="")
+            self.botao_olho.configure(image=self.icone_eye_off)
         else:
             self.entrada_password_gerada.configure(show="*")
+            self.botao_olho.configure(image=self.icone_eye)
 
     def limitar_descricao(self, event):
         texto = self.entrada_descricao.get()
