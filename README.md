@@ -4,11 +4,10 @@ Um gestor Básico offline
 
 Next Features:
 
-- hide/show button on de generated password.
+- Thinkig....
 
 
-Version 0.2
+Version 0.2.1
 New Features:
 
-- Indicador de força da password.
-- Correção de Bugs
+- hide/show button on de generated password.
