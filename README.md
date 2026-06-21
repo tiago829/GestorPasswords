@@ -4,7 +4,7 @@ Um gestor Básico offline
 
 Next Features:
 
-- Thinkig....
+- Thinking....
 
 
 Version 0.2.1
