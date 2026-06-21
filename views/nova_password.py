@@ -49,8 +49,21 @@ class NovaPasswordView(ctk.CTkFrame):
         ctk.CTkCheckBox(self, text="Números", variable=self.usar_numeros).grid(row=6, column=0, columnspan=3, padx=20, pady=5, sticky="w")
         ctk.CTkCheckBox(self, text="Símbolos", variable=self.usar_simbolos).grid(row=7, column=0, columnspan=3, padx=20, pady=5, sticky="w")
 
-        self.label_password_gerada = ctk.CTkLabel(self, text="", font=("Arial", 11), wraplength=320)
-        self.label_password_gerada.grid(row=8, column=0, columnspan=3, pady=10)
+        frame_password = ctk.CTkFrame(self, fg_color="transparent")
+        frame_password.grid(row=8, column=0, padx=20, pady=10, sticky="ew")
+        frame_password.grid_columnconfigure(0, weight=1)
+
+        self.entrada_password_gerada = ctk.CTkEntry(frame_password, font=("Courier", 13), show="*")
+        self.entrada_password_gerada.grid(row=0, column=0, sticky="ew")
+        self.entrada_password_gerada.bind("<KeyRelease>", self.atualizar_forca_em_tempo_real)
+
+        self.mostrar_password = False
+        ctk.CTkButton(
+        frame_password,
+        text="👁",
+        width=30,
+        command=self.toggle_mostrar_password
+        ).grid(row=0, column=1, padx=(5, 0))
 
         self.label_forca = ctk.CTkProgressBar(self)
         self.label_forca.grid(row=9, column=0, padx=20, pady=(0,5), sticky="ew")
@@ -73,17 +86,27 @@ class NovaPasswordView(ctk.CTkFrame):
             caracteres += string.punctuation
 
         if not caracteres:
-            self.label_password_gerada.configure(text="Escolhe pelo menos um tipo!", text_color="red")
+            self.texto_forca.configure(text="Escolhe pelo menos um tipo!", text_color="red")
             return
 
         tamanho = self.tamanho.get()
+        
         self.password_gerada = "".join(random.choice(caracteres) for _ in range(tamanho))
-        self.label_password_gerada.configure(text=self.password_gerada, text_color="green")
+        self.entrada_password_gerada.delete(0, "end")
+        self.entrada_password_gerada.insert(0, self.password_gerada)
+
         forca_texto, forca_cor = self.calcular_forca(self.password_gerada)
         pontos_map = {"Fraca": 0.33, "Média": 0.66, "Forte": 1.0}
         self.label_forca.set(pontos_map[forca_texto])
         self.label_forca.configure(progress_color=forca_cor)
         self.texto_forca.configure(text=f"Força: {forca_texto}", text_color=forca_cor)
+
+    def toggle_mostrar_password(self):
+        self.mostrar_password = not self.mostrar_password
+        if self.mostrar_password:
+            self.entrada_password_gerada.configure(show="")
+        else:
+            self.entrada_password_gerada.configure(show="*")
 
     def limitar_descricao(self, event):
         texto = self.entrada_descricao.get()
@@ -113,23 +136,39 @@ class NovaPasswordView(ctk.CTkFrame):
         else:
             return "Forte", "green"
 
+    def atualizar_forca_em_tempo_real(self, event):
+        password = self.entrada_password_gerada.get()
+
+        if not password:
+            self.label_forca.set(0)
+            self.texto_forca.configure(text="")
+            return
+
+        forca_texto, forca_cor = self.calcular_forca(password)
+        pontos_map = {"Fraca": 0.33, "Média": 0.66, "Forte": 1.0}
+        self.label_forca.set(pontos_map[forca_texto])
+        self.label_forca.configure(progress_color=forca_cor)
+        self.texto_forca.configure(text=f"Força: {forca_texto}", text_color=forca_cor)
+
     def guardar(self):
+        
+        self.password_gerada = self.entrada_password_gerada.get()
         if not self.password_gerada:
-            self.label_password_gerada.configure(text="Gera uma password primeiro!", text_color="red")
+            self.texto_forca.configure(text="Escreve ou gera uma password!", text_color="red")
             return
 
         descricao = self.entrada_descricao.get()
         if not descricao:
-            self.label_password_gerada.configure(text="Adiciona uma descrição!", text_color="red")
+            self.texto_forca.configure(text="Adiciona uma descrição!", text_color="red")
             return
 
         linhas = get_passwords(self.nome_bd, self.fernet)
         descricoes = [linha[0] for linha in linhas]
 
         if descricao in descricoes:
-            self.label_password_gerada.configure(text="Já existe uma password com essa descrição!", text_color="red")
+            self.texto_forca.configure(text="Já existe uma password com essa descrição!", text_color="red")
             return
 
         adicionar_password(self.nome_bd, self.fernet, descricao, self.password_gerada)
         self.password_gerada = ""
-        self.label_password_gerada.configure(text="Guardado com sucesso! ✅", text_color="green")
+        self.texto_forca.configure(text="Guardado com sucesso! ✅", text_color="green")
