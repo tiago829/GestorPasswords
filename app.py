@@ -39,6 +39,12 @@ class App(ctk.CTk):
 
         self.mostrar_login()
 
+        # Timeout de sessão - 5 minutos sem atividade
+        self.TIMEOUT_MINUTOS = 5
+        self.timeout_id = None
+        self.bind_all("<Any-KeyPress>", self.resetar_timeout)
+        self.bind_all("<Any-ButtonPress>", self.resetar_timeout)
+
         # Botão de settings — criado DEPOIS do mostrar_login para ficar por cima
         from utils.icons import carregar_icone
         self.botao_settings = ctk.CTkButton(
@@ -103,6 +109,7 @@ class App(ctk.CTk):
     def ao_fazer_login(self, fernet, nome_bd):
         self.fernet = fernet
         self.nome_bd = nome_bd
+        self.resetar_timeout()
         self.mostrar_menu()
 
     def mostrar_menu(self):
@@ -126,6 +133,36 @@ class App(ctk.CTk):
 
     def voltar_de_settings(self):
         self.view_anterior()
+
+    def resetar_timeout(self, event=None):
+        # Só activa timeout se há sessão activa
+        if not self.fernet:
+            return
+        if self.timeout_id:
+            self.after_cancel(self.timeout_id)
+        self.timeout_id = self.after(
+            self.TIMEOUT_MINUTOS * 60 * 1000,
+            self.fechar_sessao_por_timeout
+        )
+
+    def fechar_sessao_por_timeout(self):
+        if not self.fernet:
+            return
+        self.fernet = None
+        self.nome_bd = None
+        self.timeout_id = None
+        self.mostrar_login()
+
+        # Popup a avisar
+        popup = ctk.CTkToplevel(self)
+        popup.title("Sessão terminada")
+        popup.geometry("300x130")
+        popup.resizable(False, False)
+        popup.grab_set()
+        popup.grid_columnconfigure(0, weight=1)
+
+        ctk.CTkLabel(popup, text="⏱ Sessão terminada por inatividade.", wraplength=260, font=("Arial", 13)).grid(row=0, column=0, pady=20, padx=20)
+        ctk.CTkButton(popup, text="OK", command=popup.destroy).grid(row=1, column=0, padx=20, sticky="ew")
 
 if __name__ == "__main__":
     app = App()
