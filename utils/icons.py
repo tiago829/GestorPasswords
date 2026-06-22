@@ -1,8 +1,14 @@
 import customtkinter as ctk
 from PIL import Image, ImageOps
+import sys
 import os
 
-PASTA_ASSETS = "assets"
+def get_pasta_assets():
+    if hasattr(sys, "_MEIPASS"):
+        return os.path.join(sys._MEIPASS, "assets")
+    return "assets"
+
+PASTA_ASSETS = get_pasta_assets()
 
 
 def criar_versao_branca(imagem):
