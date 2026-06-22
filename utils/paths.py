@@ -11,3 +11,6 @@ def get_pasta_app():
 
 def get_caminho(ficheiro):
     return os.path.join(get_pasta_app(), ficheiro)
+
+def get_caminho_tema():
+    return get_caminho("tema.txt")

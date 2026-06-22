@@ -23,3 +23,5 @@ class MenuView(ctk.CTkFrame):
                 anchor="w",
                 command=comando
             ).grid(row=i, column=0, padx=20, pady=5, sticky="ew")
+
+        

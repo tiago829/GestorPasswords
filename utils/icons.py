@@ -1,31 +1,29 @@
 import customtkinter as ctk
-from PIL import Image, ImageOps
-import sys
+from PIL import Image
 import os
+import sys
+
 
 def get_pasta_assets():
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, "assets")
     return "assets"
 
-PASTA_ASSETS = get_pasta_assets()
-
-
-def criar_versao_branca(imagem):
-    # Mantém o canal alpha (transparência) e inverte só as cores para branco
-    r, g, b, a = imagem.split()
-    branco = Image.new("RGBA", imagem.size, (255, 255, 255, 0))
-    branco.putalpha(a)
-    return branco
-
 
 def carregar_icone(nome, tamanho=20):
-    caminho = os.path.join(PASTA_ASSETS, nome)
-    imagem_preta = Image.open(caminho).convert("RGBA")
-    imagem_branca = criar_versao_branca(imagem_preta)
+    caminho = os.path.join(get_pasta_assets(), nome)
+    imagem = Image.open(caminho).convert("RGBA")
+
+    # Versão branca — mantém transparência mas pinta tudo de branco
+    r, g, b, a = imagem.split()
+    branca = Image.new("RGBA", imagem.size, (255, 255, 255, 255))
+    branca.putalpha(a)
+
+    # Versão preta — usa a imagem original (já é preta)
+    preta = imagem
 
     return ctk.CTkImage(
-        light_image=imagem_branca,
-        dark_image=imagem_preta,
+        light_image=preta,   # tema claro → ícone preto
+        dark_image=branca,   # tema escuro → ícone branco
         size=(tamanho, tamanho)
     )

@@ -39,7 +39,6 @@ class LoginView(ctk.CTkFrame):
         self.erro_label.grid(row=6, column=0)
 
         ctk.CTkButton(self, text="Criar", command=self.criar_bd).grid(row=7, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkOptionMenu(self, values=["Dark", "Light", "System"], command=self.mudar_tema).grid(row=8, column=0, padx=20, pady=10, sticky="ew")
 
     def mostrar_login(self):
         for widget in self.winfo_children():
@@ -56,10 +55,6 @@ class LoginView(ctk.CTkFrame):
         self.erro_label.grid(row=2, column=0)
 
         ctk.CTkButton(self, text="Entrar", command=self.fazer_login).grid(row=3, column=0, padx=20, pady=10, sticky="ew")
-        ctk.CTkOptionMenu(self, values=["Dark", "Light", "System"], command=self.mudar_tema).grid(row=4, column=0, padx=20, pady=10, sticky="ew")
-
-    def mudar_tema(self, escolha):
-        ctk.set_appearance_mode(escolha)
 
     def criar_bd(self):
         nome_bd = self.entrada_nome_bd.get().strip()

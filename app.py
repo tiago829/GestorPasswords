@@ -5,6 +5,8 @@ from views.login import LoginView
 from views.menu import MenuView
 from views.nova_password import NovaPasswordView
 from views.passwords import PasswordsView
+from views.settings import SettingsView
+import os
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -24,14 +26,33 @@ class App(ctk.CTk):
         ctk.CTkLabel(self, text="Created by Tiaguin", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="w")
         from utils.updater import get_versao_atual
         ctk.CTkLabel(self, text=f"v{get_versao_atual()}", font=("Arial", 9), text_color="gray").grid(row=1, column=0, padx=10, pady=5, sticky="e")
-        
+
         self.fernet = None
         self.nome_bd = None
         self.view_atual = None
 
+        # Carrega tema guardado
+        from utils.paths import get_caminho_tema
+        if os.path.exists(get_caminho_tema()):
+            with open(get_caminho_tema(), "r") as f:
+                ctk.set_appearance_mode(f.read().strip())
+
         self.mostrar_login()
 
-        # Verifica atualizações após a app abrir
+        # Botão de settings — criado DEPOIS do mostrar_login para ficar por cima
+        from utils.icons import carregar_icone
+        self.botao_settings = ctk.CTkButton(
+            self,
+            text="",
+            image=carregar_icone("settings.png", tamanho=20),
+            width=50,
+            height=50,
+            fg_color="transparent",
+            command=self.mostrar_settings
+        )
+        self.botao_settings.place(relx=1.0, rely=0.0, anchor="ne", x=-10, y=10)
+        self.botao_settings.lift() 
+
         self.after(1000, self.verificar_atualizacao)
 
     def verificar_atualizacao(self):
@@ -72,6 +93,9 @@ class App(ctk.CTk):
             self.view_atual.destroy()
         self.view_atual = view
         self.view_atual.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+        # só faz lift se o botão já existe
+        if hasattr(self, "botao_settings"):
+            self.botao_settings.lift()
 
     def mostrar_login(self):
         self.mostrar_view(LoginView(self, self.ao_fazer_login))
@@ -86,6 +110,7 @@ class App(ctk.CTk):
             "nova_password": self.mostrar_nova_password,
             "passwords": self.mostrar_passwords,
             "sair": self.mostrar_login,
+            "settings": self.mostrar_settings,
         }
         self.mostrar_view(MenuView(self, callbacks))
 
@@ -95,6 +120,12 @@ class App(ctk.CTk):
     def mostrar_passwords(self):
         self.mostrar_view(PasswordsView(self, self.nome_bd, self.fernet, self.mostrar_menu))
 
+    def mostrar_settings(self):
+        self.view_anterior = self.mostrar_login if not self.fernet else self.mostrar_menu
+        self.mostrar_view(SettingsView(self, self.voltar_de_settings))
+
+    def voltar_de_settings(self):
+        self.view_anterior()
 
 if __name__ == "__main__":
     app = App()
